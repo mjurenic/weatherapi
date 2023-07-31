@@ -5,11 +5,22 @@ terraform {
       version = "3.67.0"
     }
   }
+  backend "azurerm" {
+    resource_group_name  = "tf_rg_blobstore"
+    storage_account_name = "tfblobstore"
+    container_name       = "tfstate"
+    key                  = "terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
     skip_provider_registration = "true"
     features {}
+}
+
+variable "imagebuild" {
+    type        = string
+    description = "Latest Image Build"
 }
 
 resource "azurerm_resource_group" "tf_test" {
@@ -28,7 +39,7 @@ resource "azurerm_container_group" "tfcg_test" {
 
     container {
         name   = "weatherapi"
-        image  = "mjurenic/weatherapi"
+        image  = "mjurenic/weatherapi:${var.imagebuild}}"
         cpu    = "1"
         memory = "1"
 
